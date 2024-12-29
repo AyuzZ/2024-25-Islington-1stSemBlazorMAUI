@@ -1,0 +1,36 @@
+﻿@page "/signup"
+@using CredWatch.Models
+
+<h3>Signup</h3>
+
+@* Sign up form *@
+<div>
+    <form>
+        <div>
+            <label>Username:</label>
+            <input type="text" @bind="newUser.UserName" />
+        </div>
+        <div>
+            <label>Password:</label>
+            <input type="password" @bind="newUser.Password" />
+        </div>
+        <div>
+            <label>Retype Password:</label>
+            <input type="password" @bind="newUser.Password" />
+        </div>
+        <div>
+            <label>Preferred Currency:</label>
+            <input type="number" @bind="newUser.Phone" />
+        </div>
+        <button type="button" @onclick="Signup">Sign Up</button>
+    </form>
+</div>
+
+@code {
+    private User newUser = new User();
+    private async Task Signup()
+    {
+        
+    }
+
+}

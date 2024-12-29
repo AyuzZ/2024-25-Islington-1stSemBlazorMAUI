@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Radzen;
 
 namespace CredWatch
 {
@@ -15,10 +16,12 @@ namespace CredWatch
                 });
 
             builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddRadzenComponents();
 
 #if DEBUG
-    		builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
+            
 #endif
 
             return builder.Build();
