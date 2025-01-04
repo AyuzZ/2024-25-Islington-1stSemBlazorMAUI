@@ -7,11 +7,11 @@ using CredWatch.Models;
 
 namespace CredWatch.Services
 {
-    public interface IUserService
+    public interface ITransactionService
     {
-        Task SaveUserAsync(User user);
+        Task<int> SaveTransactionAsync(Transaction transaction);
 
-        Task<List<User>> GetAllUsersAsync();
+        Task<List<Transaction>> GetUsersTransactionsAsync(int userId);
 
         //Task<User> GetUserAsync(string username);
     }

@@ -7,12 +7,10 @@ using CredWatch.Models;
 
 namespace CredWatch.Services
 {
-    public interface IUserService
+    public interface ITagService
     {
-        Task SaveUserAsync(User user);
+        Task SaveTagAsync(Tag tag);
 
-        Task<List<User>> GetAllUsersAsync();
-
-        //Task<User> GetUserAsync(string username);
+        Task<List<Tag>> GetAllTagsAsync();
     }
 }

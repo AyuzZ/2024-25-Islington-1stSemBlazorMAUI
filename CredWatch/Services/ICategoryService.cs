@@ -7,12 +7,10 @@ using CredWatch.Models;
 
 namespace CredWatch.Services
 {
-    public interface IUserService
+    public interface ICategoryService
     {
-        Task SaveUserAsync(User user);
+        Task SaveCategoryAsync(Category category);
 
-        Task<List<User>> GetAllUsersAsync();
-
-        //Task<User> GetUserAsync(string username);
+        Task<List<Category>> GetAllCategoriesAsync();
     }
 }

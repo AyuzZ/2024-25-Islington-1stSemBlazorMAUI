@@ -7,12 +7,10 @@ using CredWatch.Models;
 
 namespace CredWatch.Services
 {
-    public interface IUserService
+    public interface ICurrencyService
     {
-        Task SaveUserAsync(User user);
+        Task SaveCurrencyAsync(Currency currency);
 
-        Task<List<User>> GetAllUsersAsync();
-
-        //Task<User> GetUserAsync(string username);
+        Task<List<Currency>> GetAllCurrenciesAsync();
     }
 }

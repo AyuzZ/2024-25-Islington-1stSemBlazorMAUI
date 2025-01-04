@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using CredWatch.Services;
+using Microsoft.Extensions.Logging;
 using Radzen;
 
 namespace CredWatch
@@ -16,7 +17,27 @@ namespace CredWatch
                 });
 
             builder.Services.AddMauiBlazorWebView();
+
+            //Registering Services
+            //Radzen
             builder.Services.AddRadzenComponents();
+            //Default Data Service (add currencies, categories, default tags,)
+            builder.Services.AddTransient<DefaultDataService>();
+            //Currency
+            builder.Services.AddSingleton<ICurrencyService, CurrencyService>();
+            //Category
+            builder.Services.AddSingleton<ICategoryService, CategoryService>();
+            //Tag
+            builder.Services.AddSingleton<ITagService, TagService>();
+            //User
+            builder.Services.AddSingleton<IUserService, UserService>();
+            //AddTransaction
+            builder.Services.AddSingleton<ITransactionService, TransactionService>();
+            //Debt
+            builder.Services.AddSingleton<IDebtService, DebtService>();
+            //Auth 
+            builder.Services.AddSingleton<AuthStateService>();
+         
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();

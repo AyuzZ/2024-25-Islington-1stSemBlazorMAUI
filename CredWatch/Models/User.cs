@@ -8,13 +8,12 @@ namespace CredWatch.Models
 {
     public class User
     {
-
         public int UserId { get; set; }
 
         public string Username { get; set; }
 
         public string Password { get; set; }
 
-        public int CurrencyId { get; set; }
+        public string CurrencyId { get; set; }
     }
 }

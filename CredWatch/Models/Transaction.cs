@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace CredWatch.Models
 {
     public class Transaction
     {
-
+       
         public int TransactionId { get; set; }
 
         public string Title { get; set; }
@@ -17,13 +18,15 @@ namespace CredWatch.Models
 
         public DateTime CreatedDate { get; set; }
 
-        public string Note { get; set; }
-
-        public int TagId { get; set; }
+        public string? Note { get; set; }
+         
+        // to change to int (after seeding default value works)
+        public string TagId { get; set; }
 
         public int UserId { get; set; }
 
-        public int CategoryId { get; set; }
+        // to change to int (after seeding default value works)
+        public string CategoryId { get; set; }
 
     }
 }
