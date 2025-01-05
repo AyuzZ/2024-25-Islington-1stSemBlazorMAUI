@@ -6,111 +6,181 @@
 @inject AuthStateService authStateService
 @inject NavigationManager navigationManager
 
-<h3>All Transactions</h3>
+<style>
+    table {
+    width: 100%;
+    border-collapse: collapse; /* Remove space between table cells */
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+    }
 
+    th {
+    background-color: #4CAF50; /* Green background for header */
+    color: white;
+    padding: 10px;
+    text-align: left;
+    font-weight: bold;
+    border-bottom: 2px solid #ddd; /* Border under headers */
+    }
+
+    td, th {
+    padding: 8px 12px;
+    border-bottom: 1px solid #ddd; 
+    }
+
+
+</style>
+
+<h3>All Transactions</h3>
+<br />
 <h4>Username: @loggedInUser.Username</h4>
 <h4>Current Balance: @currentBalance</h4>
+<br />
 
 @* Filters *@
-@* <div> *@
-@*     <h4>Filters</h4> *@
-@*     <div> *@
-@*         <label>Category:</label> *@
-@*         <select @bind="filterCategory"> *@
-@*             <option value="NoFilter">No Filter</option> *@
-@*             <option value="Credit">Credit</option> *@
-@*             <option value="Debit">Debit</option> *@
-@*             <option value="Debt">Debt</option> *@
-@*         </select> *@
-@*     </div> *@
-@*     <div> *@
-@*         <label>Tag:</label> *@
-@*         <select @bind="filterTag"> *@
-@*             <option value="NoFilter">No Filter</option> *@
-@*             <option value="Monthly">Monthly</option> *@
-@*             <option value="Yearly">Yearly</option> *@
-@*             <option value="Rent">Rent</option> *@
-@*             <option value="Fuel">Fuel</option> *@
-@*         </select> *@
-@*     </div> *@
-@*     <div>  *@
-@*          <label>Date</label>  *@
-@*          <input type="date" class="form-control" @bind="filterDate" />  *@
-@*      </div>  *@
-@*      <div>  *@
-@*         <label>Date Range</label>  *@
-@*         <input type="date" class="form-control" @bind="Date" />  *@
-@*     </div> *@
-@* </div> *@
-
 <div>
-    <h4>Inflows and Outflows</h4>
-    <table>
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Category</th>
-                <th>Tag</th>
-                <th>Amount</th>
-                <th>Created Date</th>
-                <th>Title</th>
-                <th>Note</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var transaction in creditDebitTransactions)
-            {
-
-                <tr>
-                    <th>@transaction.TransactionId</th>
-                    <th>@transaction.CategoryId</th>
-                    <th>@transaction.TagId</th>
-                    <th>@transaction.Amount</th>
-                    <th>@transaction.CreatedDate</th>
-                    <th>@transaction.Title</th>
-                    <th>@transaction.Note</th>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <h4>Filters</h4>
+    <div>
+        <label>Category:</label>
+        <select @bind="filterCategory">
+            <option value="NoFilter">No Filter</option>
+            <option value="Credit">Credit</option>
+            <option value="Debit">Debit</option>
+            <option value="Debt">Debt</option>
+        </select>
+    </div>
+    <div>
+        <label>Tag:</label>
+        <select @bind="filterTag">
+            <option value="NoFilter">No Filter</option>
+            <option value="Monthly">Monthly</option>
+            <option value="Yearly">Yearly</option>
+            <option value="Rent">Rent</option>
+            <option value="Fuel">Fuel</option>
+        </select>
+    </div>
+    <br />
+    <div>
+        <label>Date From</label>
+        <input type="date" class="form-control" @bind="filterDateFrom" />
+    </div>
+    <div>
+        <label>Date To</label>
+        <input type="date" class="form-control" @bind="filterDateTo" />
+    </div>
+    <br />
+    <div>
+        <label>Specific Date</label>
+        <input type="date" class="form-control" @bind="filterSpecificDate" />
+    </div>
+    <br />
+    <div>
+        <label>Search</label>
+        <input type="search" class="form-control" @bind="keywords" />
+    </div>
+    <br />
+    <div>
+        <label>Sort By</label>
+        <select @bind="selectedSortOption">
+            <option value="">None</option>
+            <option value="TransactionId">Transaction ID</option>
+            <option value="CreatedDate">Created Date</option>
+        </select>
+    </div>
+    <div>
+        <label>Sort Direction</label>
+        <select @bind="sortDirection">
+            <option value="Ascending">Ascending</option>
+            <option value="Descending">Descending</option>
+        </select>
+    </div>
 </div>
+<br />
 
-<div>
-    <h4>Debt</h4>
-    <table>
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Category</th>
-                <th>Tag</th>
-                <th>Amount</th>
-                <th>Created Date</th>
-                <th>Due Date</th>
-                <th>Source</th>
-                <th>Title</th>
-                <th>Note</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var debt in debts)
-            {
+@if (filterCategory != "Debt")
+{
+    <div>
+        <h4>Inflows and Outflows</h4>
+        <table>
+            <thead>
                 <tr>
-                    <th>@debt.TransactionId</th>
-                    <th>@debt.CategoryId</th>
-                    <th>@debt.TagId</th>
-                    <th>@debt.Amount</th>
-                    <th>@debt.CreatedDate</th>
-                    <th>@debt.DueDate</th>
-                    <th>@debt.Source</th>
-                    <th>@debt.Title</th>
-                    <th>@debt.Note</th>
-                    <th>@debt.Status</th>
+                    <th>Id</th>
+                    <th>Category</th>
+                    <th>Tag</th>
+                    <th>Amount</th>
+                    <th>Created Date</th>
+                    <th>Title</th>
+                    <th>Note</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+                @if (sortedTransactions.Any())
+                {
+                    @foreach (var transaction in sortedTransactions)
+                    {
+                        <tr>
+                            <th>@transaction.TransactionId</th>
+                            <th>@transaction.CategoryId</th>
+                            <th>@transaction.TagId</th>
+                            <th>@transaction.Amount</th>
+                            <th>@transaction.CreatedDate</th>
+                            <th>@transaction.Title</th>
+                            <th>@transaction.Note</th>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (!(filterCategory == "Credit" || filterCategory == "Debit"))
+{
+    <br />
+    <div>
+        <h4>Debt</h4>
+        <table>
+            <thead>
+                <tr >
+                    <th>Id</th>
+                    <th>Category</th>
+                    <th>Tag</th>
+                    <th>Amount</th>
+                    <th>Created Date</th>
+                    <th>Due Date</th>
+                    <th>Source</th>
+                    <th>Title</th>
+                    <th>Note</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (sortedDebts.Any())
+                {
+                    @foreach (var debt in sortedDebts)
+                    {
+                        <tr >
+                            <th>@debt.TransactionId</th>
+                            <th>@debt.CategoryId</th>
+                            <th>@debt.TagId</th>
+                            <th>@debt.Amount</th>
+                            <th>@debt.CreatedDate</th>
+                            <th>@debt.DueDate</th>
+                            <th>@debt.Source</th>
+                            <th>@debt.Title</th>
+                            <th>@debt.Note</th>
+                            <th>@debt.Status</th>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+}
+
+
 
 
 @code {
@@ -128,14 +198,25 @@
     private double pendingDebt;
     private double clearedDebt;
 
+    //for filters
+    private IEnumerable<Transaction> filteredTransactions => FilterTransactions();
+    private IEnumerable<Transaction> sortedTransactions => SortTransactions(filteredTransactions);
+
+    private IEnumerable<DisplayDebtModel> filteredDebts => FilterDebts();
+    private IEnumerable<DisplayDebtModel> sortedDebts => SortDebts(filteredDebts);
+
     // private List<Transaction> filteredCreditDebitTransactions = new List<Transaction>();
     // private List<DisplayDebtModel> filteredDebts = new List<DisplayDebtModel>();
 
-    // Filter Properties
-    // private string filterCategory;
-    // private string filterTag;
-    // private DateTime filterDate;
-
+    //Filter Properties
+    private string filterCategory = "NoFilter";
+    private string filterTag = "NoFilter";
+    private DateTime? filterDateFrom;
+    private DateTime? filterDateTo;
+    private DateTime? filterSpecificDate;
+    private string keywords;
+    private string selectedSortOption;
+    private string sortDirection;
 
 
     protected override async Task OnInitializedAsync()
@@ -159,9 +240,9 @@
     }
 
     private async Task GetLoggedInUsersTransactionsAsync()
-    { 
+    {
         // all transactions belonging to the logged in user
-        userTransactions = await transactionService.GetUsersTransactionsAsync(loggedInUser.UserId);  
+        userTransactions = await transactionService.GetUsersTransactionsAsync(loggedInUser.UserId);
     }
 
     private async Task SeparateDebtsFromOtherTransactions()
@@ -202,44 +283,98 @@
         currentBalance = totalInflow + pendingDebt - totalOutflow - clearedDebt;
     }
 
-    // private async Task FilterTransactions()
-    // {
-    //     filtering results from the filtered result
-    //     if both category and tag are selected, tag result are filtered from the already filtered category result
-    //     filteredCreditDebitTransactions = creditDebitTransactions;
-    //     if (!(filterCategory == null || filterCategory == "NoFilter")){
-    //         filteredCreditDebitTransactions = filteredCreditDebitTransactions.Where(t => t.CategoryId == filterCategory).ToList();
-    //     }
+    // Filter and sorting
+    private IEnumerable<Transaction> FilterTransactions()
+    {
+        var filtered = creditDebitTransactions.AsQueryable();
 
-    //     if (!(filterTag == null || filterTag == "NoFilter"))
-    //     {
-    //         filteredCreditDebitTransactions = filteredCreditDebitTransactions.Where(t => t.TagId == filterTag).ToList();
-    //     }
+        if (!string.IsNullOrEmpty(filterCategory) && filterCategory != "NoFilter")
+        {
+            filtered = filtered.Where(t => t.CategoryId == filterCategory);
+        }
 
-    //     if (!(filterDate == null || filterTag == "NoFilter"))
-    //     {
-    //         creditDebitTransactions.Where(t => t.CreatedDate == filterDate).ToList();
-    //     } 
-    // }
+        if (filterTag != "NoFilter")
+        {
+            filtered = filtered.Where(t => t.TagId.Contains(filterTag));
+        }
 
-    // private string FilterCategory
-    // {
-    //     get => filterCategory;
-    //     set
-    //     {
-    //         filterCategory = value;
-    //         FilterTransactions(); Trigger filtering when category changes
-    //     }
-    // }
+        if (!string.IsNullOrEmpty(keywords))
+        {
+            filtered = filtered.Where(t => t.Title.Contains(keywords, StringComparison.OrdinalIgnoreCase));
+        }
 
-    // private string FilterTag
-    // {
-    //     get => filterTag;
-    //     set
-    //     {
-    //         filterTag = value;
-    //         FilterTransactions(); Trigger filtering when tag changes
-    //     }
-    // }
+        if (filterSpecificDate.HasValue)
+        {
+            filtered = filtered.Where(t => t.CreatedDate.Date == filterSpecificDate.Value.Date);
+        }
+        else if (filterDateFrom.HasValue || filterDateTo.HasValue)
+        {
+            filtered = filtered.Where(t =>
+                (!filterDateFrom.HasValue || t.CreatedDate.Date >= filterDateFrom.Value.Date) &&
+                (!filterDateTo.HasValue || t.CreatedDate.Date <= filterDateTo.Value.Date));
+        }
+
+        return filtered;
+    }
+
+
+    private IEnumerable<Transaction> SortTransactions(IEnumerable<Transaction> filteredTransactions)
+    {
+        return (selectedSortOption, sortDirection) switch
+        {
+            ("TransactionId", "Ascending") => filteredTransactions.OrderBy(t => t.TransactionId),
+            ("TransactionId", "Descending") => filteredTransactions.OrderByDescending(t => t.TransactionId),
+            ("CreatedDate", "Ascending") => filteredTransactions.OrderBy(t => t.CreatedDate),
+            ("CreatedDate", "Descending") => filteredTransactions.OrderByDescending(t => t.CreatedDate),
+            _ => filteredTransactions
+        };
+    }
+
+    // for debt
+    private IEnumerable<DisplayDebtModel> FilterDebts()
+    {
+        var filtered = debts.AsQueryable();
+
+        if (!string.IsNullOrEmpty(filterCategory) && filterCategory != "NoFilter")
+        {
+            filtered = filtered.Where(t => t.CategoryId == filterCategory);
+        }
+
+        if (filterTag != "NoFilter")
+        {
+            filtered = filtered.Where(t => t.TagId.Contains(filterTag));
+        }
+
+        if (!string.IsNullOrEmpty(keywords))
+        {
+            filtered = filtered.Where(t => t.Title.Contains(keywords, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (filterSpecificDate.HasValue)
+        {
+            filtered = filtered.Where(t => t.CreatedDate.Date == filterSpecificDate.Value.Date);
+        }
+        else if (filterDateFrom.HasValue || filterDateTo.HasValue)
+        {
+            filtered = filtered.Where(t =>
+                (!filterDateFrom.HasValue || t.CreatedDate.Date >= filterDateFrom.Value.Date) &&
+                (!filterDateTo.HasValue || t.CreatedDate.Date <= filterDateTo.Value.Date));
+        }
+
+        return filtered;
+    }
+
+
+    private IEnumerable<DisplayDebtModel> SortDebts(IEnumerable<DisplayDebtModel> filteredDebts)
+    {
+        return (selectedSortOption, sortDirection) switch
+        {
+            ("TransactionId", "Ascending") => filteredDebts.OrderBy(t => t.TransactionId),
+            ("TransactionId", "Descending") => filteredDebts.OrderByDescending(t => t.TransactionId),
+            ("CreatedDate", "Ascending") => filteredDebts.OrderBy(t => t.CreatedDate),
+            ("CreatedDate", "Descending") => filteredDebts.OrderByDescending(t => t.CreatedDate),
+            _ => filteredDebts
+        };
+    }
 
 }
