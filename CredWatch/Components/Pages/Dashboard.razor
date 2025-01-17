@@ -16,8 +16,10 @@ else
     <h3>Welcome to the Dashboard</h3>
     <br />
 
+    @* First Row *@
     <div class="d-flex flex-row align-items-center justify-content-center gap-4" >
 
+        @* Pie chart for pending and cleared debts *@
         <div class="p-4" style="margin-right: 10px;">
             <RadzenStack class="rz-p-0 rz-p-md-6 rz-p-lg-12" AlignItems="AlignItems.Center">
                 <RadzenStack Style="width: 100%; max-width: 600px;">
@@ -30,7 +32,7 @@ else
             </RadzenStack>
         </div>
 
-
+        @* Table with highest or lowest transactions *@
         <div class="p-4" style="margin-left: 10px; background-color: #5A189A">
             <h4 class="text-center">Highest and Lowest</h4>
             <div class="text-center">
@@ -69,6 +71,7 @@ else
             </table>
         </div>
 
+        @* Card showing counts for each transaction category *@
         <div class="rz-p-0 rz-p-md-12">
             <RadzenCard Variant="Variant.Outlined" class="rz-my-12 rz-mx-auto" Style="max-width: 420px; background-color: #E0AAFF;">
                 <RadzenStack Gap="1rem" class="rz-p-4">
@@ -99,11 +102,13 @@ else
 
     </div>
 
+    @* Second Row *@
+    @* Bar Chart showing Total inflow, outflow and debt *@
     <div>
         <RadzenStack class="rz-p-0 rz-p-md-6 rz-p-lg-12">
             <RadzenRow>
                 <RadzenColumn Size="12">
-                    <h4>Total Inflow, Outflow, Debt</h4>
+                    <h4 class="text-center">Total Inflow, Outflow, Debt</h4>
                     <RadzenChart>
                         <RadzenColumnSeries Data="@financialData" CategoryProperty="Category" Title="Financial Totals" ValueProperty="Value">
                             <RadzenSeriesDataLabels Visible="true" />
@@ -118,8 +123,10 @@ else
         </RadzenStack>
     </div>
 
+    @* Final Row *@
+    @* Pending Debts *@
     <div class="d-flex flex-row align-items-start justify-content-center">
-                
+
         <div class="d-flex flex-column">
             <div class="mt-5 p-4" style="background-color: #5A189A">
                 <h4 class="text-center">Pending Debts</h4>
@@ -171,23 +178,15 @@ else
             </div>
         </div>
     </div>
-    
 
-    
-
-    
-    
-    
-
-    
-
+    @* to show error message *@
     @if (showErrorModal)
     {
         <div class="modal fade show d-block" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Exception Occured.</h5>
+                        <h5 class="modal-title">Debt Clearance Denied.</h5>
                         <button type="button" class="btn-close" @onclick="CloseErrorModal"></button>
                     </div>
                     <div class="modal-body">
@@ -200,16 +199,43 @@ else
         </div>
         <div class="modal-backdrop fade show"></div>
     }
+
+    @* to show success messages *@
+    @if (showSuccessModal)
+    {
+        <div class="modal fade show d-block" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Debt Cleared.</h5>
+                        <button type="button" class="btn-close" @onclick="CloseSuccessModal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label>@successMessage</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-backdrop fade show"></div>
+    }
 }
 
 @code {
 
     private bool showErrorModal = false;
+    private bool showSuccessModal = false;
     private string errorMessage;
+    private string successMessage;
 
     private void CloseErrorModal()
     {
         showErrorModal = false;
+    }
+    private void CloseSuccessModal()
+    {
+        showSuccessModal = false;
     }
 
     private User loggedInUser = new User();
@@ -325,8 +351,8 @@ else
 
             balances.CurrentBalance -= updateDebt.Amount;
 
-            errorMessage = "Debt Cleared Successfully.";
-            showErrorModal = true;
+            successMessage = "Debt Cleared Successfully.";
+            showSuccessModal = true;
 
             // reloading the page
             navigationManager.NavigateTo("/dashboard");
@@ -335,7 +361,7 @@ else
         }
         catch (Exception ex)
         {
-            errorMessage = $"An error occurred while clearing the debt: {ex.Message}";
+            errorMessage = ex.Message;
             Console.WriteLine(errorMessage); // Log for debugging
             showErrorModal = true;
         }

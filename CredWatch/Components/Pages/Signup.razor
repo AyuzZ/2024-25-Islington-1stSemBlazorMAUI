@@ -10,35 +10,35 @@
     <h3 class="mb-0 text-center">
         Already have an account?
         <br />
-        <a href="/">Login</a>
+        <a href="/" style="color:#E0AAFF">Login</a>
     </h3>
 </div>
     
 <div class="rz-p-0 rz-p-md-12">
-    <RadzenCard Variant="Variant.Outlined" class="rz-my-12 rz-mx-auto" Style="max-width: 420px;">
+    <RadzenCard Variant="Variant.Outlined" class="rz-my-12 rz-mx-auto" Style="max-width: 420px; background-color:#5A189A">
         <RadzenStack Gap="1rem" class="rz-p-4">
 
-            <RadzenFormField Text="Username" Variant="Variant.Outlined">
-                <RadzenTextBox @bind-Value="@user.Username" />
+            <RadzenFormField Text="Username" Variant="Variant.Outlined" Style="color:#5A189A">
+                <RadzenTextBox @bind-Value="@user.Username" Style="background-color:#E0AAFF;" />
                 <RadzenRequiredValidator Component="username" Text="Username is required" />
             </RadzenFormField>
 
-            <RadzenFormField Text="Password" Variant="Variant.Outlined">
-                <RadzenPassword @bind-Value="@user.Password" />
+            <RadzenFormField Text="Password" Variant="Variant.Outlined" Style="color:#5A189A">
+                <RadzenPassword @bind-Value="@user.Password" Style="background-color:#E0AAFF;" />
                 <RadzenRequiredValidator Component="password" Text="Password is required" />
             </RadzenFormField>
 
-            <RadzenFormField Text="Retype Password" Variant="Variant.Outlined">
-                <RadzenPassword @bind-Value="@user.RetypePassword" />
+            <RadzenFormField Text="Retype Password" Variant="Variant.Outlined" Style="color:#5A189A">
+                <RadzenPassword @bind-Value="@user.RetypePassword" Style="background-color:#E0AAFF;" />
                 <RadzenRequiredValidator Component="retypePassword" Text="Retype Password is required" />
             </RadzenFormField>
 
-            <RadzenFormField Text="Currency" Variant="Variant.Outlined">
-                <RadzenDropDown Data="@currencies" TextProperty="Text" ValueProperty="Value" @bind-Value="@user.Currency" />
+            <RadzenFormField Text="Currency" Variant="Variant.Outlined" Style="color:#5A189A">
+                <RadzenDropDown Data="@currencies" TextProperty="Text" ValueProperty="Value" @bind-Value="@user.Currency" Style="background-color:#E0AAFF;" />
                 <RadzenRequiredValidator Component="selectedCurrency" Text="Please select a currency" />
             </RadzenFormField>
 
-            <RadzenButton Text="Submit" Click="SignupUser" Style="margin-top: 1rem;" />
+            <RadzenButton Text="Submit" Click="SignupUser" Style="margin-top: 1rem; color:#E0AAFF; background-color:#230143; " />
         </RadzenStack>
     </RadzenCard>
 </div>
@@ -50,7 +50,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Exception Occured.</h5>
+                    <h5 class="modal-title">Signup Denied.</h5>
                     <button type="button" class="btn-close" @onclick="CloseErrorModal"></button>
                 </div>
                 <div class="modal-body">
@@ -126,7 +126,7 @@
 
         }catch(Exception ex)
         {
-            errorMessage = $"An error occurred while signing in the user: {ex.Message}";
+            errorMessage =ex.Message;
             showErrorModal = true;
             Console.WriteLine(errorMessage); // Log for debugging
         }

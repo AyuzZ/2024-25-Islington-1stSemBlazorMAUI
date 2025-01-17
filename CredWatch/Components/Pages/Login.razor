@@ -10,24 +10,24 @@
     <h3 class="mb-0 text-center">
         Don't have an account?
         <br />
-        <a href="/signup">Sign Up</a>
+        <a href="/signup" style="color:#E0AAFF">Sign Up</a>
     </h3>
 </div>
 <div class="rz-p-0 rz-p-md-12">
-    <RadzenCard Variant="Variant.Outlined" class="rz-my-12 rz-mx-auto" Style="max-width: 420px;">
+    <RadzenCard Variant="Variant.Outlined" class="rz-my-12 rz-mx-auto" Style="max-width: 420px; background-color:#5A189A">
         <RadzenStack Gap="1rem" class="rz-p-4">
 
-            <RadzenFormField Text="Username" Variant="Variant.Outlined">
-                <RadzenTextBox @bind-Value="@loginUser.UserName" />
+            <RadzenFormField Text="Username" Variant="Variant.Outlined" Style="color:#5A189A">
+                <RadzenTextBox @bind-Value="@loginUser.UserName" Style="background-color:#E0AAFF;" />
                 <RadzenRequiredValidator Component="username" Text="Username is required" />
             </RadzenFormField>
 
-            <RadzenFormField Text="Password" Variant="Variant.Outlined">
-                <RadzenPassword @bind-Value="@loginUser.Password" />
+            <RadzenFormField Text="Password" Variant="Variant.Outlined" Style="color:#5A189A">
+                <RadzenPassword @bind-Value="@loginUser.Password" Style="background-color:#E0AAFF;" />
                 <RadzenRequiredValidator Component="password" Text="Password is required" />
             </RadzenFormField>
 
-            <RadzenButton Text="Submit" Click="LoginUser" Style="margin-top: 1rem;" />
+            <RadzenButton Text="Submit" Click="LoginUser" Style="margin-top: 1rem; color:#E0AAFF; background-color:#230143; " />
         </RadzenStack>
     </RadzenCard>
 </div>
@@ -38,7 +38,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Exception Occured.</h5>
+                    <h5 class="modal-title">Login Denied.</h5>
                     <button type="button" class="btn-close" @onclick="CloseErrorModal"></button>
                 </div>
                 <div class="modal-body">
@@ -67,6 +67,15 @@
     {
         try
         {
+            // Input Validation
+            if (string.IsNullOrWhiteSpace(loginUser.UserName) ||
+                string.IsNullOrWhiteSpace(loginUser.Password))
+            {
+                errorMessage = "All fields are required.";
+                Console.WriteLine(errorMessage);
+                throw new Exception(errorMessage);
+            }
+
             var users = await userService.GetAllUsersAsync();
             var user = users.FirstOrDefault(u => u.Username == loginUser.UserName && u.Password == HashPassword(loginUser.Password));
 
@@ -87,7 +96,7 @@
         }
         catch (Exception ex)
         {
-            errorMessage = $"An error occurred during login: {ex.Message}";
+            errorMessage = ex.Message;
             showErrorModal = true;
             Console.WriteLine(errorMessage);
         }

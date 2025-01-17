@@ -16,6 +16,7 @@
     </div>
 
     <main>
+        @* Display username and current balance when the user is logged in *@
         @if (authStateService.IsLoggedIn()) 
         {
             <div class="top-row pt-4 min-h-fit-content" style="background-color:#240046; color: #E0AAFF; border: none;">
@@ -70,7 +71,7 @@
                 debts, debtDetails, pendingDebtDetails, clearedDebtDetails);
 
        }
-
+       // Reload Page
        StateHasChanged();
     }
 }

@@ -13,6 +13,7 @@
         Track your Transactions.     
     </p>
 
+    @* Add Transaction Form *@
     <div class="rz-p-0 rz-p-md-12">
         <RadzenCard Variant="Variant.Outlined" class="rz-my-12 rz-mx-auto" Style="max-width: 420px;">
             <RadzenStack Gap="1rem" class="rz-p-4">
@@ -77,13 +78,14 @@
     </div>
 </div>
 
+@* To display error messages *@
 @if (showErrorModal)
 {
     <div class="modal fade show d-block" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Exception Occured.</h5>
+                    <h5 class="modal-title">Saving Denied.</h5>
                     <button type="button" class="btn-close" @onclick="CloseErrorModal"></button>
                 </div>
                 <div class="modal-body">
@@ -96,6 +98,7 @@
     </div>
     <div class="modal-backdrop fade show"></div>
 }
+
 
 @code {
 
@@ -203,14 +206,14 @@
             }
             catch (Exception ex)
             {
-                errorMessage = $"An error occurred while saving the transaction: {ex.Message}";
+                errorMessage = ex.Message;
                 Console.WriteLine(errorMessage); // Log for debugging
                 showErrorModal = true;
             }
         }
         catch (Exception ex)
         {
-            errorMessage = $"An error occurred while obtaining the logged in user: {ex.Message}";
+            errorMessage = ex.Message;
             showErrorModal = true;
             Console.WriteLine(errorMessage); // Log for debugging
         }
