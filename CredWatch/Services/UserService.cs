@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.IO;
 using System.Threading.Tasks;
 using CredWatch.Models;
+using CredWatch.DTOs;
 
 namespace CredWatch.Services
 {
@@ -14,17 +15,22 @@ namespace CredWatch.Services
     {
         private readonly string usersFilePath = Path.Combine(AppContext.BaseDirectory, "Users.json");
 
-        public async Task SaveUserAsync(User user)
+        public async Task SaveUserAsync(UserSignupDTO userSignupDTO)
         {
             try
             {
-                var users = await GetAllUsersAsync();
+                User user = new User();
 
+                var users = await GetAllUsersAsync();
+                                
                 // User id
                 int usersCount = users.Count();
                 user.UserId = usersCount + 1;
                 // Hash the user's password
-                user.Password = HashPassword(user.Password);
+                user.Password = HashPassword(userSignupDTO.Password);
+                // username and currency
+                user.Username = userSignupDTO.Username;
+                user.Currency = userSignupDTO.Currency;
 
                 users.Add(user);
                 await WriteUsersToJson(users);

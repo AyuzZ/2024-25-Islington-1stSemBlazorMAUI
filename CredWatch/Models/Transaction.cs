@@ -14,19 +14,19 @@ namespace CredWatch.Models
 
         public string Title { get; set; }
 
-        public decimal Amount { get; set; }
+        public double Amount { get; set; }
 
         public DateTime CreatedDate { get; set; }
 
         public string? Note { get; set; }
          
         // to change to int (after seeding default value works)
-        public string TagId { get; set; }
+        public string Tag { get; set; }
 
         public int UserId { get; set; }
 
         // to change to int (after seeding default value works)
-        public string CategoryId { get; set; }
+        public string Category { get; set; }
 
     }
 }

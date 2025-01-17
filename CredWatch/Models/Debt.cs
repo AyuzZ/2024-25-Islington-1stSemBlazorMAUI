@@ -16,7 +16,7 @@ namespace CredWatch.Models
 
         public DateTime DueDate { get; set; }
 
-        public string Status { get; set; }
+        public bool IsCleared { get; set; }
 
         public int TransactionId { get; set; }
     }

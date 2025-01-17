@@ -1,6 +1,7 @@
 ﻿@page "/addTransactions"
 @using CredWatch.Models
 @using CredWatch.Services
+@using CredWatch.DTOs
 @inject ITransactionService transactionService
 @inject IDebtService debtService
 @inject NavigationManager navigationManager
@@ -11,145 +12,210 @@
     <p>
         Track your Transactions.     
     </p>
-    @if (!string.IsNullOrEmpty(errorMessage))
-    {
-        <p class="error-message">@errorMessage</p>
-    }
-    <form>
-        <div>
-            <label>Transaction Category:</label>
-            <select @bind="transaction.CategoryId">
-                <option value="" disabled selected>Select a category</option>
-                <option value="Credit">Credit</option>
-                <option value="Debit">Debit</option>
-                <option value="Debt">Debt</option>
-            </select>
-        </div>
-        <div>
-            <label>Title:</label>
-            <input type="text" @bind="transaction.Title" />
-        </div>
 
-        @* Debt source and due date only avaible for category debt *@
-        @if (transaction.CategoryId == "Debt")
-        {
-            <div>
-                <label>Debt Source:</label>
-                <input type="text" @bind="debt.Source" />
-            </div>
-            <div>
-                <label>Due Date</label>
-                <input type="date" @bind="debt.DueDate" />
-            </div>
-            <div>
-                <label>Status</label>
-                <select @bind="debt.Status">
-                    <option value="" disabled selected>Select Status</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Cleared">Cleared</option>
-                </select>
-            </div>
-        }
+    <div class="rz-p-0 rz-p-md-12">
+        <RadzenCard Variant="Variant.Outlined" class="rz-my-12 rz-mx-auto" Style="max-width: 420px;">
+            <RadzenStack Gap="1rem" class="rz-p-4">
 
-        <div>
-            <label>Amount:</label>
-            <input type="number" @bind="transaction.Amount" />
-        </div>
+                <RadzenFormField Text="Transaction Category" Variant="Variant.Outlined">
+                    <RadzenDropDown @bind-Value="transaction.Category" TextProperty="Text" ValueProperty="Value" Data="categories" Placeholder="Select a category" />
+                    <RadzenRequiredValidator Component="transaction.Category" Text="Transaction category is required" />
+                </RadzenFormField>
 
-        <div>
-            <label>Tag Type:</label>
-            <select @bind="tagType">
-                <option value="Custom">Custom</option>
-                <option value="Existing">Existing</option>
-            </select>
-        </div>
+                <RadzenFormField Text="Title" Variant="Variant.Outlined">
+                    <RadzenTextBox @bind-Value="transaction.Title" />
+                    <RadzenRequiredValidator Component="transaction.Title" Text="Title is required" />
+                </RadzenFormField>
 
-        @if (tagType == "Existing")
-        {
-            <div>
-                <label>Existing Tag:</label>
-                <select @bind="transaction.TagId">
-                    <option value="" disabled selected>Select a tag</option>
-                    <option value="Monthly">Monthly</option>
-                    <option value="Yearly">Yearly</option>
-                    <option value="Rent">Rent</option>
-                    <option value="Fuel">Fuel</option>
-                </select>
-            </div>
-        }
-        else
-        {
-            <div>
-                <label>Custom Tag:</label>
-                <input type="text" @bind="transaction.TagId" />
-            </div>
-        }
+                @* Debt Source and Due Date for Debt Category *@
+                @if (transaction.Category == "Debt")
+                {
+                    <RadzenFormField Text="Debt Source" Variant="Variant.Outlined">
+                        <RadzenTextBox @bind-Value="debt.Source" />
+                        <RadzenRequiredValidator Component="debt.Source" Text="Debt source is required" />
+                    </RadzenFormField>
 
-        <div>
-            <label>Note:</label>
-            <input type="text" @bind="transaction.Note" />
-        </div>
-        <button type="button" @onclick="SaveTransaction">Save Transaction</button>
-    </form>
+                    <RadzenFormField Text="Due Date" Variant="Variant.Outlined">
+                        <RadzenDatePicker @bind-Value="debt.DueDate" />
+                        <RadzenRequiredValidator Component="debt.DueDate" Text="Due date is required" />
+                    </RadzenFormField>
+                }
+
+                <RadzenFormField Text="Amount" Variant="Variant.Outlined">
+                    <RadzenNumeric @bind-Value="transaction.Amount" />
+                    <RadzenRequiredValidator Component="transaction.Amount" Text="Amount is required" />
+                </RadzenFormField>
+
+                <RadzenFormField Text="Tag Type" Variant="Variant.Outlined">
+                    <RadzenDropDown @bind-Value="tagType" Data="tagTypes" Placeholder="Select tag type" />
+                    <RadzenRequiredValidator Component="tagType" Text="Tag type is required" />
+                </RadzenFormField>
+
+                @* Existing Tag or Custom Tag Based on Tag Type *@
+                @if (tagType == "Existing")
+                {
+                    <RadzenFormField Text="Existing Tag" Variant="Variant.Outlined">
+                        <RadzenDropDown @bind-Value="transaction.Tag" Data="existingTags" Placeholder="Select a tag" />
+                        <RadzenRequiredValidator Component="transaction.Tag" Text="Existing tag is required" />
+                    </RadzenFormField>
+                }
+                else
+                {
+                    <RadzenFormField Text="Custom Tag" Variant="Variant.Outlined">
+                        <RadzenTextBox @bind-Value="transaction.Tag" />
+                        <RadzenRequiredValidator Component="transaction.Tag" Text="Custom tag is required" />
+                    </RadzenFormField>
+                }
+
+                <RadzenFormField Text="Note" Variant="Variant.Outlined">
+                    <RadzenTextBox @bind-Value="transaction.Note" />
+                </RadzenFormField>
+
+                <RadzenButton Text="Save Transaction" Click="SaveTransaction" Style="margin-top: 1rem;" />
+            </RadzenStack>
+        </RadzenCard>
+    </div>
 </div>
 
+@if (showErrorModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Exception Occured.</h5>
+                    <button type="button" class="btn-close" @onclick="CloseErrorModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>@errorMessage</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
 @code {
+
+    private User loggedInUser = new User();
+    private BalanceDTO balances = new BalanceDTO();
+
     private Transaction transaction = new Transaction();
     private Debt debt = new Debt();
     private string tagType;
+
+    private List<dynamic> categories = new()
+    {
+        new { Text = "Credit", Value = "Credit" },
+        new { Text = "Debit", Value = "Debit" },
+        new { Text = "Debt", Value = "Debt" }
+    };
+    private List<string> tagTypes = new() { "Custom", "Existing" };
+
+    private List<string> existingTags = new() { "Yearly", "Monthly", "Rent", "Fuel", "Food and Drinks", "Clothes", "Health Loan", "Student Loan", "Others" };
+
     private String errorMessage;
+
+    private bool showErrorModal = false;
+
+    private void CloseErrorModal()
+    {
+        showErrorModal = false;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        loggedInUser = authStateService.GetLoggedInUser();
+        balances = authStateService.GetBalances();
+    }
 
     private async Task SaveTransaction()
     {
         //Getting logged in user
         try
         {
-            var user = authStateService.GetLoggedInUser();
-            if (user != null)
+            // Input Validation
+            if (string.IsNullOrWhiteSpace(transaction.Category) ||
+               string.IsNullOrWhiteSpace(transaction.Title) ||
+               string.IsNullOrWhiteSpace(transaction.Amount.ToString()) ||
+               (transaction.Category == "Debt" && (string.IsNullOrWhiteSpace(debt.Source) || debt.DueDate == null)) ||
+               (tagType == "Existing" && string.IsNullOrWhiteSpace(transaction.Tag)) ||
+               (tagType == "Custom" && string.IsNullOrWhiteSpace(transaction.Tag)))
             {
-                transaction.UserId = user.UserId;
+                errorMessage = "All fields are required.";
+                Console.WriteLine(errorMessage);
+                throw new Exception(errorMessage);
+            }
 
-                try
+            if (transaction.Amount <= 0)
+            {
+                errorMessage = "Amount must be greater than 0";
+                Console.WriteLine(errorMessage);
+                throw new Exception(errorMessage);
+            }
+
+            transaction.UserId = loggedInUser.UserId;
+
+            try
+            {
+                // Balance check for outflow
+                if (transaction.Category == "Debit")
                 {
-                    // Saving the new transaction
-                    int transactionId = await transactionService.SaveTransactionAsync(transaction);
-
-                    // save extra info if it is debt
-                    if (transaction.CategoryId == "Debt")
+                    if (transaction.Amount > balances.CurrentBalance)
                     {
-                        debt.TransactionId = transactionId;
-                        try
-                        {
-                            await debtService.SaveDebtAsync(debt);
-                        }catch (Exception ex)
-                        {
-                            errorMessage = $"An error occurred while saving the debt: {ex.Message}";
-                            Console.WriteLine(errorMessage); // Log for debugging
-                        }
+                        errorMessage = $"Current Balance is lower than outflow.";
+                        throw new Exception(errorMessage);
                     }
-
-                    // Resetting the user object
-                    transaction = new Transaction();
-                    // Clearing the error message
-                    errorMessage = null;
-
-                    // Redirect to transactions page
-                    navigationManager.NavigateTo("/viewTransactions");
-
                 }
-                catch (Exception ex)
+
+
+                // Saving the new transaction
+                int transactionId = await transactionService.SaveTransactionAsync(transaction);
+
+                // save extra info if it is debt
+                if (transaction.Category == "Debt")
                 {
-                    errorMessage = $"An error occurred while saving the transaction: {ex.Message}";
-                    Console.WriteLine(errorMessage); // Log for debugging
+                    debt.TransactionId = transactionId;
+                    debt.IsCleared = false;
+                    try
+                    {
+                        await debtService.SaveDebtAsync(debt);
+                    }
+                    catch (Exception ex)
+                    {
+                        errorMessage = $"An error occurred while saving the debt: {ex.Message}";
+                        Console.WriteLine(errorMessage); // Log for debugging
+                    }
                 }
+
+                // Resetting the transaction object
+                transaction = new Transaction();
+                // Resetting the debt object
+                debt = new Debt();
+                // Clearing the error message
+                errorMessage = null;
+
+                // Redirect to transactions page
+                navigationManager.NavigateTo("/viewTransactions");
+
+            }
+            catch (Exception ex)
+            {
+                errorMessage = $"An error occurred while saving the transaction: {ex.Message}";
+                Console.WriteLine(errorMessage); // Log for debugging
+                showErrorModal = true;
             }
         }
         catch (Exception ex)
         {
             errorMessage = $"An error occurred while obtaining the logged in user: {ex.Message}";
+            showErrorModal = true;
             Console.WriteLine(errorMessage); // Log for debugging
         }
         
     }
+
 
 }

@@ -13,6 +13,8 @@ namespace CredWatch.Services
 
         Task<Debt> GetDebtByTransactionIdAsync(int transactionId);
 
+        Task ClearDebtAsync(int debtId);
+
         //Task<User> GetUserAsync(string username);
     }
 }

@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CredWatch.Models
+namespace CredWatch.DTOs
 {
-    public class User
+    public class UserSignupDTO
     {
-        public int UserId { get; set; }
-
         public string Username { get; set; }
 
         public string Password { get; set; }
+
+        public string RetypePassword { get; set; }
 
         public string Currency { get; set; }
     }

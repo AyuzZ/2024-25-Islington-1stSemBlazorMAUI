@@ -21,14 +21,6 @@ namespace CredWatch
             //Registering Services
             //Radzen
             builder.Services.AddRadzenComponents();
-            //Default Data Service (add currencies, categories, default tags,)
-            builder.Services.AddTransient<DefaultDataService>();
-            //Currency
-            builder.Services.AddSingleton<ICurrencyService, CurrencyService>();
-            //Category
-            builder.Services.AddSingleton<ICategoryService, CategoryService>();
-            //Tag
-            builder.Services.AddSingleton<ITagService, TagService>();
             //User
             builder.Services.AddSingleton<IUserService, UserService>();
             //AddTransaction
@@ -37,7 +29,11 @@ namespace CredWatch
             builder.Services.AddSingleton<IDebtService, DebtService>();
             //Auth 
             builder.Services.AddSingleton<AuthStateService>();
-         
+            //Balance
+            builder.Services.AddSingleton<IBalanceService, BalanceService>();
+
+            
+
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();

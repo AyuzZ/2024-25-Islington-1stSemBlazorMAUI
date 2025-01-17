@@ -1,7 +1,23 @@
 ﻿@page "/signout"
+@using CredWatch.Models
+@using CredWatch.Services
+@inject IUserService userService
+@inject NavigationManager navigationManager
+@inject AuthStateService authStateService
 
-<h3>Signout</h3>
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="d-flex flex-column align-items-center p-4 bg-light rounded shadow-sm" style="background-color:#5A189A">
+        <p class="h5 mb-3 text-center text-dark">Are you sure you want to sign out?</p>
+        <button type="button" class="btn btn-danger" @onclick="SignOutUser">Sign Out</button>
+    </div>
+</div>
+
 
 @code {
-
+    private void SignOutUser()
+    {
+        authStateService.Signout();
+        navigationManager.NavigateTo("/");
+        StateHasChanged();
+    }
 }

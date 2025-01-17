@@ -4,38 +4,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CredWatch.Models
+namespace CredWatch.DTOs
 {
-    public class DisplayDebtModel
+    public class DebtDetailsDTO
     {
-       
         public int TransactionId { get; set; }
         public string Title { get; set; }
-        public decimal Amount { get; set; }
+        public double Amount { get; set; }
         public DateTime CreatedDate { get; set; }
         public string? Note { get; set; }
-        public string TagId { get; set; }
+        public string Tag { get; set; }
         public int UserId { get; set; }
-        public string CategoryId { get; set; }
+        public string Category { get; set; }
         public int DebtId { get; set; }
         public string Source { get; set; }
         public DateTime DueDate { get; set; }
-        public string Status { get; set; }
+        public bool IsCleared { get; set; }
 
-        public DisplayDebtModel(int transactionId, string title, decimal amount, DateTime createdDate, string? note, string tagId, int userId, string categoryId)
+        public DebtDetailsDTO(int transactionId, string title, double amount, DateTime createdDate, string? note, string tag, int userId, string category)
         {
             TransactionId = transactionId;
             Title = title;
             Amount = amount;
             CreatedDate = createdDate;
             Note = note;
-            TagId = tagId;
+            Tag = tag;
             UserId = userId;
-            CategoryId = categoryId;
+            Category = category;
         }
-        
-        public DisplayDebtModel()
+
+        public DebtDetailsDTO()
         {
         }
+
     }
 }

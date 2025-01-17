@@ -1,17 +1,76 @@
-﻿@inherits LayoutComponentBase
+﻿@using CredWatch.Models
+@using CredWatch.DTOs
+@using CredWatch.Services
+
+@inject AuthStateService authStateService
+@inject IUserService userService
+@inject ITransactionService transactionService
+@inject IDebtService debtService
+@inject IBalanceService balanceService
+
+@inherits LayoutComponentBase
 
 <div class="page">
-    <div class="sidebar">
+    <div class="sidebar" style="background-color: #10002B">
         <NavMenu />
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+        @if (authStateService.IsLoggedIn()) 
+        {
+            <div class="top-row pt-4 min-h-fit-content" style="background-color:#240046; color: #E0AAFF; border: none;">
+                <div class="d-flex flex-column align-items-start">
+                    <p>Username: @loggedInUser.Username</p>
+                    <p>Current Balance:@loggedInUser.Currency @balances.CurrentBalance</p>
+                </div>
+            </div> 
+        }
 
         <article class="content px-4">
             @Body
         </article>
     </main>
 </div>
+
+@code{
+    private User loggedInUser = new User(); 
+
+    private List<Transaction> userTransactions = new List<Transaction>(); 
+
+    private List<Transaction> creditTransactions = new List<Transaction>(); 
+    private List<Transaction> debitTransactions = new List<Transaction>();
+    private List<Transaction> debtTransactions = new List<Transaction>();
+    private List<Transaction> creditDebitTransactions = new List<Transaction>();
+
+    private List<Debt> debts = new List<Debt>(); 
+    private List<DebtDetailsDTO> debtDetails = new List<DebtDetailsDTO>(); 
+
+    private List<DebtDetailsDTO> pendingDebtDetails = new List<DebtDetailsDTO>(); 
+    private List<DebtDetailsDTO> clearedDebtDetails = new List<DebtDetailsDTO>(); 
+
+    private BalanceDTO balances = new BalanceDTO(); 
+
+    protected override async Task OnParametersSetAsync() 
+    { 
+       if (authStateService.IsLoggedIn()) 
+       { 
+            loggedInUser = authStateService.GetLoggedInUser(); 
+
+            userTransactions = await transactionService.GetUsersTransactionsAsync(loggedInUser.UserId);
+
+            (creditTransactions, debitTransactions, debtTransactions, creditDebitTransactions) = balanceService.SeparateTransactions(userTransactions); 
+
+            (debtDetails, debts) = await balanceService.GetDebtDetailsAsync(debtTransactions); 
+
+            (pendingDebtDetails, clearedDebtDetails) = balanceService.SeparateDebtDetails(debtDetails); 
+
+            balances = balanceService.CalculateBalances(creditTransactions, debitTransactions, pendingDebtDetails, clearedDebtDetails);
+
+            authStateService.SetUserData(balances, userTransactions, creditTransactions, debitTransactions, debtTransactions, creditDebitTransactions,
+                debts, debtDetails, pendingDebtDetails, clearedDebtDetails);
+
+       }
+
+       StateHasChanged();
+    }
+}

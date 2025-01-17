@@ -78,6 +78,27 @@ namespace CredWatch.Services
             }
         }
 
+        public async Task ClearDebtAsync(int debtId)
+        {
+            try
+            {
+                var debts = await GetAllDebtsAsync();
+
+                var index = debts.FindIndex(d => d.DebtId == debtId);
+                if (index >= 0)
+                {
+                    debts[index].IsCleared = true;
+                }
+
+                await WriteDebtsToJson(debts);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving user: {ex.Message}");
+                throw;
+            }
+        }
+
         private async Task WriteDebtsToJson(List<Debt> debts)
         {
             try
@@ -96,6 +117,7 @@ namespace CredWatch.Services
             }
         }
 
-     
+        
+
     }
 }

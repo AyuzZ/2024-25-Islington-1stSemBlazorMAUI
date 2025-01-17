@@ -1,58 +1,111 @@
 ﻿@page "/signup"
 @using CredWatch.Models
 @using CredWatch.Services
+@using CredWatch.DTOs
 @inject IUserService userService
 @inject NavigationManager navigationManager
 
-<h3>Signup</h3>
-
 @* Sign up form *@
-<div>
-    <p>
+<div class="d-flex flex-column align-items-center justify-content-center mt-4 mb-0">
+    <h3 class="mb-0 text-center">
         Already have an account?
+        <br />
         <a href="/">Login</a>
-    </p>
-    @if (!string.IsNullOrEmpty(errorMessage))
-    {
-        <p class="error-message">@errorMessage</p>
-    }
-    <form>
-        <div>
-            <label>Username:</label>
-            <input type="text" @bind="user.Username" />
-        </div>
-        <div>
-            <label>Password:</label>
-            <input type="password" @bind="user.Password" />
-        </div>
-        @* <div> *@
-        @*     <label>Retype Password:</label> *@
-        @*     <input type="password" @bind="retypePassword" /> *@
-        @* </div> *@
-        <div>
-            <label>Preferred Currency:</label>
-            <select @bind="user.CurrencyId">
-                <option value="USD">USD - United States Dollar</option>
-                <option value="EUR">EUR - Euro</option>
-                <option value="GBP">GBP - British Pound</option>
-                <option value="NRS">NRS - Nepalese Rupees</option>
-            </select>
-        </div>
-        <button type="button" @onclick="SignupUser">Sign Up</button>
-    </form>
+    </h3>
+</div>
+    
+<div class="rz-p-0 rz-p-md-12">
+    <RadzenCard Variant="Variant.Outlined" class="rz-my-12 rz-mx-auto" Style="max-width: 420px;">
+        <RadzenStack Gap="1rem" class="rz-p-4">
+
+            <RadzenFormField Text="Username" Variant="Variant.Outlined">
+                <RadzenTextBox @bind-Value="@user.Username" />
+                <RadzenRequiredValidator Component="username" Text="Username is required" />
+            </RadzenFormField>
+
+            <RadzenFormField Text="Password" Variant="Variant.Outlined">
+                <RadzenPassword @bind-Value="@user.Password" />
+                <RadzenRequiredValidator Component="password" Text="Password is required" />
+            </RadzenFormField>
+
+            <RadzenFormField Text="Retype Password" Variant="Variant.Outlined">
+                <RadzenPassword @bind-Value="@user.RetypePassword" />
+                <RadzenRequiredValidator Component="retypePassword" Text="Retype Password is required" />
+            </RadzenFormField>
+
+            <RadzenFormField Text="Currency" Variant="Variant.Outlined">
+                <RadzenDropDown Data="@currencies" TextProperty="Text" ValueProperty="Value" @bind-Value="@user.Currency" />
+                <RadzenRequiredValidator Component="selectedCurrency" Text="Please select a currency" />
+            </RadzenFormField>
+
+            <RadzenButton Text="Submit" Click="SignupUser" Style="margin-top: 1rem;" />
+        </RadzenStack>
+    </RadzenCard>
 </div>
 
+
+@if (showErrorModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Exception Occured.</h5>
+                    <button type="button" class="btn-close" @onclick="CloseErrorModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>@errorMessage</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
 @code {
-    private User user = new User();
-    // private String retypePassword;
+    private User user2 = new User();
+    private UserSignupDTO user = new UserSignupDTO();
+
     private String errorMessage;
+
+    private bool showErrorModal = false;
+
+    private void CloseErrorModal()
+    {
+        showErrorModal = false;
+    }
+
+    private List<dynamic> currencies = new List<dynamic>
+    {
+        new { Text = "USD", Value = "$" },
+        new { Text = "Nepalese Rupees", Value = "Rs" },
+        new { Text = "Euros", Value = "€" },
+        new { Text = "GBP", Value = "£" }
+    };
 
     private async Task SignupUser()
     {
         try
         {
             // Input Validation
+            if (string.IsNullOrWhiteSpace(user.Username) ||
+                string.IsNullOrWhiteSpace(user.Password) ||
+                string.IsNullOrWhiteSpace(user.RetypePassword) ||
+                string.IsNullOrWhiteSpace(user.Currency))
+            {
+                errorMessage = "All fields are required.";
+                Console.WriteLine(errorMessage);
+                throw new Exception(errorMessage);
+            }
 
+            if (user.Password != user.RetypePassword)
+            {
+                errorMessage = "Passwords do not match.";
+                Console.WriteLine(errorMessage);
+                throw new Exception(errorMessage);
+            }
 
             // Getting user by the given username. If a user is retrieved, it means a user already exists with the given username.
             var existingUsers = await userService.GetAllUsersAsync();
@@ -65,7 +118,7 @@
             // Saving the new user if username is unique
             await userService.SaveUserAsync(user);
             // Resetting the user object
-            user = new User();
+            user = new UserSignupDTO();
             // Clearing the error message
             errorMessage = null;
             // Redirect to login page
@@ -74,6 +127,7 @@
         }catch(Exception ex)
         {
             errorMessage = $"An error occurred while signing in the user: {ex.Message}";
+            showErrorModal = true;
             Console.WriteLine(errorMessage); // Log for debugging
         }
     }
